@@ -1,12 +1,18 @@
 {
     "f1":{
         "rotation":{
-            "angle":"30"
+            "angle":30
         }
     },
     "f2":{
         "flip":{
-            "how":"horizontally"
+            "flip_code":1
+        }
+    },
+    "f3":{
+        "shift":{
+            "axis":1,
+            "shift_range":0.2
         }
     }
 }
