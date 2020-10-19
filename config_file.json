@@ -1,0 +1,12 @@
+{
+    "f1":{
+        "rotation":{
+            "angle":"30"
+        }
+    },
+    "f2":{
+        "flip":{
+            "how":"horizontally"
+        }
+    }
+}
