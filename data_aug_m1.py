@@ -7,24 +7,30 @@ import json
 import os
 from tkinter import filedialog, Tk
 from image_augmentation import ImageAugmentation
-
+from ia_params_extract_utils import ParamsExtractUtils
 class DataAugmentation:
 
-    def __init__(self):
+    def __init__(self,config_file_path):
         self.aug_config_dict = {}
-        self.input_images_dir_path = ''
+        self.input_images_dir_path = r'C:\Users\paulmi\Desktop\MachineLearning\data-aug-M1\test'
+        self.config_file_path = config_file_path
+        # self.input_images_dir_path = ''
+        # self.config_file_path =''
         self.output_dir_path = ''
         self.img_count = 1
         self.img_augmentator = ImageAugmentation()
+        self.params_extract = ParamsExtractUtils()
         # Configure tkinter library
         self.root = Tk() # create Tkinter object
         self.root.attributes("-topmost", True) # place the file explorer as the top most window
         # root.lift()
         self.root.withdraw() #withdraw the vindow since it is not necessary
+        self.load_config_file()
+        self.choose_input_dir()
 
     def load_config_file(self):
-        config_file_path = filedialog.askopenfilename(parent=self.root)    
-        with open(config_file_path,"r",encoding='utf8') as json_file:
+        self.config_file_path = filedialog.askopenfilename(parent=self.root)    
+        with open(self.config_file_path,"r",encoding='utf8') as json_file:
             self.aug_config_dict = json.load(json_file)
     
     def choose_input_dir(self):
@@ -34,50 +40,16 @@ class DataAugmentation:
     def create_output_dir(self):
         """
             Create an output directory to store the augmented images and then 
-            change the current directory to this newly create directory in order for
+            change the current directory to this newly created directory in order for
             cv2.imwrite() to store the images in this directory
 
             Name of this directory will be input_dir name + '_aug' suffix and will be created
-            in the same place as input directory
+            in the same parent directory as the input directory
         """
         self.output_dir_path = self.input_images_dir_path+'_aug'
         if not os.path.exists(self.output_dir_path):
             os.mkdir(self.output_dir_path)
         os.chdir(self.output_dir_path)
-
-    def extract_rotation_params(self,rotation_params_dict):
-        """
-            iterate through all the parameters of the method and extract the valid rotate parameters
-        """
-        angle = 0
-        for param_name, param_value in rotation_params_dict.items():
-            if(param_name == 'angle' and type(param_value) is int or type(param_value) is float):
-                angle = param_value
-        # print('paran_name',param_name ,angle)
-        return angle
-
-    def extract_flip_params(self,flip_params_dict):
-        """
-            iterate through all the parameters of the method and extract the valid flip parameters
-        """
-        flip_code = 0
-        for param_name, param_value in flip_params_dict.items(): 
-            if(param_name == 'flip_code' and type(param_value) is int):
-                flip_code = param_value
-        return flip_code
-
-    def extract_shift_params(self,shift_params_dict,img_shape_dim):
-        """
-            iterate through all the parameters of the method and extract the valid shift parameters
-        """
-        axis = None
-        shift_range = 0
-        for param_name, param_value in shift_params_dict.items(): 
-            if(param_name == 'axis' and type(param_value) is int and param_value<img_shape_dim):
-                axis = param_value
-            if(param_name == 'shift_range' and type(param_value) is float and param_value<=1): # because it's a probability
-                shift_range = param_value
-        return (axis,shift_range)
 
     def save_img(self,image,name_content_list):
         name_content_list = [str(value) for value in name_content_list]
@@ -96,21 +68,37 @@ class DataAugmentation:
             for _,aug_method_dict in self.aug_config_dict.items(): #iterate trough all the functions of the config file
                 print(aug_method_dict)
                 for method_name,method_prams_dict in aug_method_dict.items(): #iterate through all the methods of each function
+                    name_content_list = [current_img_file_name.split('.')[0], method_name, self.img_count]
                     if(method_name == 'rotation'):
-                        in_angle = self.extract_rotation_params(method_prams_dict)
+                        in_angle = self.params_extract.extract_rotation_params(method_prams_dict)
                         rotated_img = self.img_augmentator.rotate_image(current_img,angle=in_angle)
-                        self.save_img(rotated_img,[current_img_file_name.split('.')[0],method_name,self.img_count])
+                        self.save_img(rotated_img,name_content_list)
 
                     if(method_name == 'flip'):
-                        in_flip_code = self.extract_flip_params(method_prams_dict)
+                        in_flip_code = self.params_extract.extract_flip_params(method_prams_dict)
                         fliped_img = self.img_augmentator.flip_image(current_img,flip_code=in_flip_code)
-                        self.save_img(fliped_img,[current_img_file_name.split('.')[0],method_name,self.img_count])
+                        self.save_img(fliped_img,name_content_list)
 
                     if(method_name == 'shift'):
-                        in_axis,in_shift_range = self.extract_shift_params(method_prams_dict,current_img.ndim)
+                        in_axis,in_shift_range = self.params_extract.extract_shift_params(method_prams_dict,current_img.ndim)
                         fliped_img = self.img_augmentator.shift_image(current_img,axis=in_axis,shift_range=in_shift_range)
-                        self.save_img(fliped_img,[current_img_file_name.split('.')[0],method_name,self.img_count])
-        
+                        self.save_img(fliped_img,name_content_list)
+                        
+                    if(method_name == 'shear'):
+                        in_shear_angle = self.params_extract.extract_shear_params(method_prams_dict)
+                        sheared_img = self.img_augmentator.shear_image(current_img,shear_angle=in_shear_angle)
+                        self.save_img(sheared_img,name_content_list)
+                    
+                    if(method_name == 'zoom'):
+                        in_zoom_factor = self.params_extract.extract_zoom_params(method_prams_dict)
+                        zoomed_img = self.img_augmentator.clipped_zoom_image(current_img,zoom_factor=in_zoom_factor)
+                        self.save_img(zoomed_img,name_content_list)
+
+                    if(method_name == 'random_crop'):
+                        (in_height_range,in_width_range) = self.params_extract.extract_random_crop_params(method_prams_dict)
+                        rand_croped_img = self.img_augmentator.random_crop_image(current_img,height_range=in_height_range,width_range=in_width_range)
+                        self.save_img(rand_croped_img,name_content_list)
+
     def apply_augmentations(self):
         cwd = os.getcwd() #to get the current directory as a string
         img_path = os.path.join(cwd,'my_cat.jfif')
@@ -119,23 +107,19 @@ class DataAugmentation:
         ia = ImageAugmentation()
 
         # res = ia.rotate_image(image,angle=-30.75)
-        # res = ia.shear_image(image,-0.2)
+        res = ia.shear_image(image,-0.2)
+        # print(res)
         # ia.tint_image(image)
         # res = ia.shift_image(image,axis=1,shift_range=0.2)
-        res= ia.flip_image(image,10.23)
+        # res= ia.flip_image(image,10.23)
         # res =self.cv2_clipped_zoom(image,1.3)
         # print(res)
         # res = ia.random_crop_image(image,int(image.shape[0]*0.59),int(image.shape[1]*0.59))
         plt.imshow(res)
         plt.show()
 
-da = DataAugmentation()
-# da.apply_augmentations()
-da.load_config_file()
-da.choose_input_dir()
+da = DataAugmentation(r'.\config_file.json')
 da.augment_images()
-
-
-
-
-# file_path = filedialog.askopenfilename(parent=root)
+# da.apply_augmentations()
+# da.load_config_file()
+# da.choose_input_dir()

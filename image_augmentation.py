@@ -88,7 +88,9 @@ class ImageAugmentation:
         afine_tf = sk_transform.AffineTransform(shear=shear_angle)
         # Apply transform to image data
         result = sk_transform.warp(image, inverse_map=afine_tf)
-        return result
+        # scikit learn returns float64 based numbers betwen 0 and 1 and cv2 uses uint8 0-255 numbers
+        # therefore conversion is necessary 
+        return (result*255).astype(np.uint8)
 
     def clipped_zoom_image(self,image, zoom_factor):
         """
@@ -128,7 +130,7 @@ class ImageAugmentation:
         assert result.shape[0] == height and result.shape[1] == width
         return result
 
-    def random_crop_image(self, image, height, width):
+    def random_crop_image(self, image, height_range, width_range):
         """
             Applies random cropping to the given image 
             Parameters
@@ -143,6 +145,9 @@ class ImageAugmentation:
             -------
                 cropped image as np.array
         """
+        height = int(image.shape[0]*height_range)
+        width = int(image.shape[1]*width_range)
+
         assert image.shape[0] >= height
         assert image.shape[1] >= width
         x = np.random.randint(0, image.shape[1] - width)
