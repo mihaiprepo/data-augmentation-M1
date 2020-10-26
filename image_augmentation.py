@@ -1,5 +1,6 @@
 import numpy as np
 from cv2 import cv2
+import random
 from skimage import transform as sk_transform
 
 class ImageAugmentation:
@@ -28,6 +29,38 @@ class ImageAugmentation:
         # size of the output image image.shape[1::-1]
         result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
         return result
+
+    def random_bright_image(self,image,brightness_range):
+        """
+            Randomly brighten the given image by the input angle in the counter-clockwise direction
+            The intent is to allow a model to generalize across images trained on different lighting levels.
+            Parameters
+            ----------
+                image : ndim np.array
+                    image to be brightened
+                brightness_range : tuple of ints
+                    specifies the range from within the brightness value (in pixels) 
+                    relative to the current imageshould be randomly chosen
+            Returns
+            -------
+                brightened image as np.array
+
+        """
+        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        h, s, v = cv2.split(hsv)
+
+        start_range,end_range = brightness_range
+        rand_val = random.randint(start_range,end_range)
+   
+        v = cv2.add(v,rand_val)
+        v[v > 255] = 255
+        v[v < 0] = 0
+        final_hsv = cv2.merge((h, s, v))
+
+        image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
+        return np.copy(image)
+    
+
 
     def flip_image(self, image, flip_code):
         """
