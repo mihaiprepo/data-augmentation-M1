@@ -28,39 +28,7 @@ class ImageAugmentation:
         # apply the affine transformation to the image
         # size of the output image image.shape[1::-1]
         result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
-        return result
-
-    def random_bright_image(self,image,brightness_range):
-        """
-            Randomly brighten the given image by the input angle in the counter-clockwise direction
-            The intent is to allow a model to generalize across images trained on different lighting levels.
-            Parameters
-            ----------
-                image : ndim np.array
-                    image to be brightened
-                brightness_range : tuple of ints
-                    specifies the range from within the brightness value (in pixels) 
-                    relative to the current imageshould be randomly chosen
-            Returns
-            -------
-                brightened image as np.array
-
-        """
-        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        h, s, v = cv2.split(hsv)
-
-        start_range,end_range = brightness_range
-        rand_val = random.randint(start_range,end_range)
-   
-        v = cv2.add(v,rand_val)
-        v[v > 255] = 255
-        v[v < 0] = 0
-        final_hsv = cv2.merge((h, s, v))
-
-        image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
-        return np.copy(image)
-    
-
+        return result 
 
     def flip_image(self, image, flip_code):
         """
@@ -187,3 +155,89 @@ class ImageAugmentation:
         y = np.random.randint(0, image.shape[0] - height)
         image = image[y:y+height, x:x+width]
         return image
+
+    def random_bright_image(self,image,brightness_range):
+        """
+            Randomly brighten the given image.
+            The intent is to allow a model to generalize across images trained on different lighting levels.
+            Parameters
+            ----------
+                image : ndim np.array
+                    image to be brightened
+                brightness_range : tuple of ints
+                    specifies the range from within the brightness value (in pixels)
+                    should be chosen 
+            Returns
+            -------
+                brightened image as np.array
+
+        """
+        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        h, s, v = cv2.split(hsv)
+
+        start_range,end_range = brightness_range
+        rand_val = random.randint(start_range,end_range)
+   
+        v = cv2.add(v,rand_val)
+        v[v > 255] = 255
+        v[v < 0] = 0
+        final_hsv = cv2.merge((h, s, v))
+
+        image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
+        return np.copy(image)
+
+    def adjust_gamma(self,image, gamma=1.0):
+        """
+            Image gamma correction with random gamma
+            Parameters
+            ----------
+                image: ndim np.array
+                    image to be transformed by gamma correction
+                gamma: float 
+            Returns
+            -------
+                corrected image as np.array
+        """
+        # build a lookup table mapping the pixel values [0, 255] to their adjusted gamma values
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255
+            for i in np.arange(0, 256)]).astype("uint8")
+        # apply gamma correction using the lookup table
+        return cv2.LUT(image, table)
+    
+    def gaussian_blur(self,image,kernel=(3,3)):
+        """
+            Applies gaussian blur to the given image
+            Parameters
+            ----------
+                image: ndim np.array
+                    image to be blurred
+                kernel: tuple that represents the kernel window. HAS to be a tuple off odd integers.
+                The bigger the tuple values, the blurrier the image becomes
+            Returns
+            -------
+                blurred image as np.array
+        """
+        # a gaussian kernel needs to be odd size
+        image = cv2.GaussianBlur(image,kernel,cv2.BORDER_DEFAULT)
+        return image
+    
+    def contrast_image(self,image,contrast_factor):
+        """
+            Adjust contrast of the given image.
+            Parameters
+            ----------
+                img (numpy ndarray): numpy ndarray to be adjusted.
+                contrast_factor (float): How much to adjust the contrast. Can be any
+                    non negative number. 0 gives a solid gray image, 1 gives the
+                    original image while 2 increases the contrast by a factor of 2.
+            Returns
+            -------
+                numpy ndarray: Contrast adjusted image.
+        """
+        # alpha 1  beta 0      --> no change  
+        # 0 < alpha < 1        --> lower contrast  
+        # alpha > 1            --> higher contrast  
+        # -127 < beta < +127   --> good range for brightness values
+        result = cv2.convertScaleAbs(image, alpha=contrast_factor, beta=0)
+        return result

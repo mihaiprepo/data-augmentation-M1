@@ -67,3 +67,43 @@ class ParamsExtractUtils:
             if(param_name == 'width_range' and type(param_value) is float and param_value<=1): # because it's a probability
                 width_range = param_value
         return (height_range,width_range)
+    
+    def extract_random_brightness_params(self,random_bright_dict):
+        """
+            iterate through all the parameters of the cropping method and extract the valid pixel range parameters
+        """
+        for param_name, param_value in random_bright_dict.items():
+            if(param_name == 'brightness_range'):
+                if((type(param_value[0]) is int) and (type(param_value[1]) is int) and (param_value[0] < param_value[1])):
+                    return (param_value[0],param_value[1])    
+        return (0,0) # default: no range
+    
+    def extract_gamma_correction_params(self,gamma_dict):
+        """
+            iterate through all the parameters of the given gamma correction config and extract the valid gamma params
+        """
+        gamma = 1.0
+        for param_name, param_value in gamma_dict.items():
+            if(param_name == 'gamma' and type(param_value) is float or type(param_value) is int):  
+                gamma = param_value
+        return gamma
+    
+    def extract_gaussian_blur_params(self,blur_dict):
+        """
+            iterate through all the parameters of the given gaussian blur config and extract the valid gaussian blur params
+        """
+        kernel = (3,3) # default kernel size 
+        for param_name, param_value in blur_dict.items():
+            if(param_name == 'kernel_size' and type(param_value) is int and param_value%2==1):
+                kernel = (param_value,param_value)
+        return kernel
+
+    def extract_brightness_params(self,contrast_dict):
+        """
+            iterate through all the parameters of the given contrast config and extract the valid construct params
+        """
+        contrast_factor = 1.0 # 1 gives the original image => NO brightness
+        for param_name, param_value in contrast_dict.items():
+            if(param_name == 'contrast_factor' and type(param_value) is float and param_value > 0):  
+                contrast_factor = param_value
+        return contrast_factor

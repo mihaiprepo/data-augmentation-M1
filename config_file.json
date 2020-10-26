@@ -28,5 +28,25 @@
             "height_range":0.8,
             "width_range":0.6
         }
+    },
+    "f6":{
+        "random_brightness":{
+            "brightness_range":[0,60]
+        }
+    },
+    "f7":{
+        "adjust_gamma":{
+            "gamma":2.0
+        }
+    },
+    "f8":{
+        "gaussian_blur":{
+            "kernel_size":7
+        }
+    },
+    "f9":{
+        "contrast":{
+            "contrast_factor":0.7
+        }
     }
 }

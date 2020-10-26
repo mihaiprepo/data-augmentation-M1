@@ -28,8 +28,8 @@ class DataAugmentation:
         self.root.attributes("-topmost", True) # place the file explorer as the top most window
         # root.lift()
         self.root.withdraw() #withdraw the vindow since it is not necessary
-        # self.load_config_file()
-        # self.choose_input_dir()
+        self.load_config_file()
+        self.choose_input_dir()
 
     def load_config_file(self):
         self.config_file_path = filedialog.askopenfilename(parent=self.root)    
@@ -101,6 +101,26 @@ class DataAugmentation:
                         rand_croped_img = self.img_augmentator.random_crop_image(current_img,height_range=in_height_range,width_range=in_width_range)
                         self.save_img(rand_croped_img,name_content_list)
 
+                    if(method_name == 'random_brightness'):
+                        (start_of_range,end_of_range) = self.params_extract.extract_random_brightness_params(random_bright_dict=method_prams_dict)
+                        rand_brightened_img = self.img_augmentator.random_bright_image(current_img,brightness_range=(start_of_range,end_of_range))
+                        self.save_img(rand_brightened_img,name_content_list)
+
+                    if(method_name =='adjust_gamma'):
+                        gamma = self.params_extract.extract_gamma_correction_params(gamma_dict=method_prams_dict)
+                        gamma_cor_img = self.img_augmentator.adjust_gamma(current_img,gamma=gamma)
+                        self.save_img(gamma_cor_img,name_content_list)
+
+                    if(method_name =='gaussian_blur'):
+                        kernel = self.params_extract.extract_gaussian_blur_params(blur_dict=method_prams_dict)
+                        gauss_blur_img = self.img_augmentator.gaussian_blur(current_img,kernel=kernel)
+                        self.save_img(gauss_blur_img,name_content_list)
+                    
+                    if(method_name =='contrast'):
+                        contrast_factor = self.params_extract.extract_brightness_params(contrast_dict=method_prams_dict)
+                        contrasted_img = self.img_augmentator.contrast_image(current_img,contrast_factor=contrast_factor)
+                        self.save_img(contrasted_img,name_content_list)
+
     def apply_augmentations(self):
         cwd = os.getcwd() #to get the current directory as a string
         img_path = os.path.join(cwd,'my_cat.jfif')
@@ -121,8 +141,8 @@ class DataAugmentation:
         plt.imshow(res)
         plt.show()
 
-# da = DataAugmentation(r'.\config_file.json')
-# da.augment_images()
+da = DataAugmentation(r'.\config_file.json')
+da.augment_images()
 # da.apply_augmentations()
 # da.load_config_file()
 # da.choose_input_dir()
@@ -140,76 +160,76 @@ class DataAugmentation:
 #     img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
 #     return img
 
-def gaussian_blur(image,kernel=(3,3)):
-    # a gaussian kernel needs to be odd size
-    image = cv2.GaussianBlur(image,kernel,cv2.BORDER_DEFAULT)
-    return image
+# def gaussian_blur(image,kernel=(3,3)):
+#     # a gaussian kernel needs to be odd size
+#     image = cv2.GaussianBlur(image,kernel,cv2.BORDER_DEFAULT)
+#     return image
 
-def contrast_image(image):
-    alpha = 0.3 # Contrast control (1.0-3.0)
-    beta = 0 # Brightness control (0-100)
-#     alpha 1  beta 0      --> no change  
-# 0 < alpha < 1        --> lower contrast  
-# alpha > 1            --> higher contrast  
-# -127 < beta < +127   --> good range for brightness values
-    adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
-    return adjusted
+# def contrast_image(image):
+#     alpha = 0.3 # Contrast control (1.0-3.0)
+#     beta = 0 # Brightness control (0-100)
+# #     alpha 1  beta 0      --> no change  
+# # 0 < alpha < 1        --> lower contrast  
+# # alpha > 1            --> higher contrast  
+# # -127 < beta < +127   --> good range for brightness values
+#     adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+#     return adjusted
 
-def clahe(image):
-    image_bw = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
-    clahe = cv2.createCLAHE(clipLimit = 40) 
-    final_img = clahe.apply(image_bw) +30
-    _, ordinary_img = cv2.threshold(image_bw, 155, 255, cv2.THRESH_BINARY)  
-    return final_img
+# def clahe(image):
+#     image_bw = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
+#     clahe = cv2.createCLAHE(clipLimit = 40) 
+#     final_img = clahe.apply(image_bw) +30
+#     _, ordinary_img = cv2.threshold(image_bw, 155, 255, cv2.THRESH_BINARY)  
+#     return final_img
 
-def rgb_shift(image):
+# def rgb_shift(image):
 
-    r, g, b = cv2.split(image)
+#     r, g, b = cv2.split(image)
 
-    start_range,end_range = (-10,100)
-    rand_val = random.randint(start_range,end_range)
+#     start_range,end_range = (-10,100)
+#     rand_val = random.randint(start_range,end_range)
 
-    r = cv2.add(r,rand_val)
-    r[r > 255] = 255
-    r[r < 0] = 0
+#     r = cv2.add(r,rand_val)
+#     r[r > 255] = 255
+#     r[r < 0] = 0
 
-    g = cv2.add(g,rand_val)
-    g[g > 255] = 255
-    g[g < 0] = 0
+#     g = cv2.add(g,rand_val)
+#     g[g > 255] = 255
+#     g[g < 0] = 0
 
-    b = cv2.add(b,rand_val)
-    b[b > 255] = 255
-    b[b < 0] = 0
+#     b = cv2.add(b,rand_val)
+#     b[b > 255] = 255
+#     b[b < 0] = 0
 
-    final_hsv = cv2.merge((r, g, b))
+#     final_hsv = cv2.merge((r, g, b))
 
-    # image = cv2.cvtColor(final_hsv, cv)
-    return final_hsv
+#     # image = cv2.cvtColor(final_hsv, cv)
+#     return final_hsv
 
-def adjust_gamma(image, gamma=1.0):
-	# build a lookup table mapping the pixel values [0, 255] to
-	# their adjusted gamma values
-	invGamma = 1.0 / gamma
-	table = np.array([((i / 255.0) ** invGamma) * 255
-		for i in np.arange(0, 256)]).astype("uint8")
-	# apply gamma correction using the lookup table
-	return cv2.LUT(image, table)
+# def adjust_gamma(image, gamma=1.0):
+# 	# build a lookup table mapping the pixel values [0, 255] to
+# 	# their adjusted gamma values
+# 	invGamma = 1.0 / gamma
+# 	table = np.array([((i / 255.0) ** invGamma) * 255
+# 		for i in np.arange(0, 256)]).astype("uint8")
+# 	# apply gamma correction using the lookup table
+# 	return cv2.LUT(image, table)
 
-cwd = os.getcwd() #to get the current directory as a string
-img_path = os.path.join(cwd,'horse.jpg')
-image = cv2.imread(img_path,cv2.IMREAD_UNCHANGED)
-image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-# res = gaussian_blur(image,(9,9))
-# res = contrast_image(image)
-res = rgb_shift(image)
-# print(res)
-# ia.tint_image(image)
-# res = ia.shift_image(image,axis=1,shift_range=0.2)
-# res= ia.flip_image(image,10.23)
-# res =self.cv2_clipped_zoom(image,1.3)
-# print(res)
-# res = ia.random_crop_image(image,int(image.shape[0]*0.59),int(image.shape[1]*0.59))
-plt.imshow(image)
-plt.figure()
-plt.imshow(res)
-plt.show()
+# cwd = os.getcwd() #to get the current directory as a string
+# img_path = os.path.join(cwd,'horse.jpg')
+# image = cv2.imread(img_path,cv2.IMREAD_UNCHANGED)
+# image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+# # res = gaussian_blur(image,(9,9))
+# # res = contrast_image(image)
+# res = rgb_shift(image)
+# # print(res)
+# # ia.tint_image(image)
+# # res = ia.shift_image(image,axis=1,shift_range=0.2)
+# # res= ia.flip_image(image,10.23)
+# # res =self.cv2_clipped_zoom(image,1.3)
+# # print(res)
+# # res = ia.random_crop_image(image,int(image.shape[0]*0.59),int(image.shape[1]*0.59))
+# plt.imshow(image)
+# plt.figure()
+# plt.imshow(res)
+# plt.show()
