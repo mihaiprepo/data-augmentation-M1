@@ -101,7 +101,7 @@ class ImageAugmentation:
             ----------
                 image : ndim np.array
                     image to be zoomed.
-                zoom_factor : 
+                zoom_factor : float
                     amount of zoom as a ratio (0 to Inf)        
             Returns
             -------
@@ -138,9 +138,9 @@ class ImageAugmentation:
             ----------
                 image : ndim np.array
                     image to be cropped.
-                height : int
+                height_range : float
                     height of the resulting cropped image. Must be <= image.shape[0]
-                width : int 
+                width_range : float
                     width of the resulting cropped image. Must be <= image.shape[1]
             Returns
             -------
@@ -188,7 +188,7 @@ class ImageAugmentation:
 
     def adjust_gamma(self,image, gamma=1.0):
         """
-            Image gamma correction with random gamma
+            Image gamma correction
             Parameters
             ----------
                 image: ndim np.array

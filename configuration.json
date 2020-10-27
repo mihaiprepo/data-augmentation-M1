@@ -40,9 +40,7 @@
         }
     },
     "f8":{
-        "gaussian_blur":{
-            "kernel_size":7
-        }
+        "gaussian_blur":{"kernel_size":7}
     },
     "f9":{
         "contrast":{

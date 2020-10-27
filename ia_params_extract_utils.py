@@ -82,7 +82,7 @@ class ParamsExtractUtils:
         """
             iterate through all the parameters of the given gamma correction config and extract the valid gamma params
         """
-        gamma = 1.0
+        gamma = 1.0 # no gamma correction
         for param_name, param_value in gamma_dict.items():
             if(param_name == 'gamma' and type(param_value) is float or type(param_value) is int):  
                 gamma = param_value
@@ -98,7 +98,7 @@ class ParamsExtractUtils:
                 kernel = (param_value,param_value)
         return kernel
 
-    def extract_brightness_params(self,contrast_dict):
+    def extract_contrast_params(self,contrast_dict):
         """
             iterate through all the parameters of the given contrast config and extract the valid construct params
         """
