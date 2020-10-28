@@ -1,0 +1,16 @@
+{
+    "f1":{
+        "rotation":{
+            "angle":30
+        },
+        "flip":{
+            "flip_code":1
+        }
+    },
+    "f3":{
+        "shift":{
+            "axis":1,
+            "shift_range":0.2
+        }
+    }
+}

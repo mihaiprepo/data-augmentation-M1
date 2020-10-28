@@ -3,7 +3,8 @@
         "rotation":{"angle":30}
     },
    "func2":{
-        "flip":{"flip_code":1}
+        "flip":{"flip_code":1},
+        "adjust_gamma":{"gamma":2.0}
     },
     "fct3":{
         "shift":{"axis":1,"shift_range":0.2},
@@ -14,9 +15,6 @@
     },
     "f123":{
         "contrast":{"contrast_factor":0.7}
-    },
-   "f7":{
-        "adjust_gamma":{"gamma":2.0}
     },
     "f8":{
         "gaussian_blur":{"kernel_size":7}
