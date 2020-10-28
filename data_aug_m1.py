@@ -127,6 +127,7 @@ class DataAugmentation:
                     name_content_list = [current_img_file_name.split('.')[0], method_name, self.img_count]
                     transformed_img = self.apply_transform(current_img=current_img,method_name=method_name,method_params_dict=method_params_dict)
                     self.save_img(transformed_img,name_content_list)
+                    
                 if(len(aug_method_dict)>1): # chain processing case
                     print('----chain transform----')
                     chain_processed_img = current_img
@@ -141,5 +142,5 @@ class DataAugmentation:
                     self.save_img(chain_processed_img,name_content_list)
                 print(current_img_file_name,'---',aug_method_dict)              
 
-da = DataAugmentation(r'.\config_1.json')
+da = DataAugmentation(r'.\configuration.json')
 da.augment_images()
