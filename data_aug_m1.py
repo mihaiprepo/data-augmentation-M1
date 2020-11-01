@@ -142,5 +142,6 @@ class DataAugmentation:
                     self.save_img(chain_processed_img,name_content_list)
                 print(current_img_file_name,'---',aug_method_dict)              
 
-da = DataAugmentation(r'.\configuration.json')
+# da = DataAugmentation(r'\configuration.json')
+da = DataAugmentation('.\a')
 da.augment_images()

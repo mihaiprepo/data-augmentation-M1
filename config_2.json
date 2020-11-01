@@ -1,16 +1,24 @@
 {
     "f1":{
         "rotation":{
-            "angle":30
+            "angle":-35
         },
         "flip":{
-            "flip_code":1
+            "flip_code":0
         }
     },
     "f3":{
         "shift":{
-            "axis":1,
+            "axis":0,
             "shift_range":0.2
+        }
+    },
+    "f8":{
+        "gaussian_blur":{"kernel_size":5}
+    },
+    "f6":{
+        "contrast":{
+            "contrast_factor":1.2
         }
     }
 }
