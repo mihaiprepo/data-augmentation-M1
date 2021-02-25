@@ -1,13 +1,11 @@
 #import the necessary libraries
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from cv2 import cv2
 import json
 import os
 from tkinter import filedialog, Tk
 from image_augmentation import ImageAugmentation
-from ia_params_extract_utils import ParamsExtractUtils
+from params_extract_utils import ParamsExtractUtils
 import random
 
 
@@ -143,5 +141,6 @@ class DataAugmentation:
                 print(current_img_file_name,'---',aug_method_dict)              
 
 # da = DataAugmentation(r'\configuration.json')
-da = DataAugmentation('.\a')
-da.augment_images()
+if __name__ == '__main__':
+    da = DataAugmentation('.\a')
+    da.augment_images()
