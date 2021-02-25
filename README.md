@@ -5,9 +5,11 @@ Configuration file is implemented using JSON, a dictionary-like format. The idea
 
 Example of config file can be found input_config_#no.json 
 
-<h3>Supported methods<h3>
-Geometrical Transformations
-Rotation (rotation)
+<h3>Supported methods</h3>
+
+**Geometrical Transformations**
+
+**Rotation (rotation)**
 Rotates the given image by the input angle (in degrees) in the counter-clockwise direction. If a negative angle value is provided, the rotation will be made in the clockwise direction.
 Parameters
                 angle : float  -  angle of rotation in degrees. Must be in [-180,180] range
