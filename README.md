@@ -44,7 +44,7 @@ Parameters
 
 Parameters
 
- 	**flip_code** : integer that specifies along which axis the flipping should be made
+**flip_code** : integer that specifies along which axis the flipping should be made
 
 ​          0 means flipping around the x-axis (height axis). 
 
@@ -58,7 +58,7 @@ Parameters
 
 Parameters
 
-​	**axis** : integer - Axis along which pixels are shifted
+**axis** : integer - Axis along which pixels are shifted
 
 ​          0 means shifting around x-axis (height axis).
 
