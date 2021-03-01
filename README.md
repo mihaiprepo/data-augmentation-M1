@@ -74,9 +74,9 @@ Parameters
 
 ​	**zoom_factor** : float – amount of zoom as a ratio (0 to Infinity). Zooming out will downscale the image which will have the effect of blanking out the 			remaining pixels of the image
 
-   		**<1** means zooming out the given image
+   		<1 means zooming out the given image
 
-  		**\>1** means zooming in
+  		 >1 means zooming in
 
 
 
